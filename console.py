@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Defines the HBnB console."""
+"""This defines the HBnB console."""
 import cmd
 import re
 from shlex import split
@@ -14,7 +14,7 @@ from models.review import Review
 
 
 def parse_arguments(arg_string):
-    """Parse the input arguments."""
+    """make the arguments parsing input"""
     curly_braces = re.search(r"\{(.*?)\}", arg_string)
     brackets = re.search(r"\[(.*?)\]", arg_string)
     if curly_braces is None:
@@ -33,10 +33,10 @@ def parse_arguments(arg_string):
 
 
 class HBNBCommand(cmd.Cmd):
-    """Defines the HolbertonBnB command interpreter.
+    """ the HolbertonBnB command. attr(s).
 
     Attributes:
-        prompt (str): The command prompt.
+        prompt : The command defined as a string
     """
 
     prompt = "(hbnb) "
@@ -51,11 +51,11 @@ class HBNBCommand(cmd.Cmd):
     }
 
     def emptyline(self):
-        """Do nothing upon receiving an empty line."""
+        """passing and receiving an empty line."""
         pass
 
     def default(self, arg_string):
-        """Handle invalid input."""
+        """setting defazult for invalid input."""
         arg_dict = {
             "all": self.do_all,
             "show": self.do_show,
@@ -65,7 +65,10 @@ class HBNBCommand(cmd.Cmd):
         }
         match = re.search(r"\.", arg_string)
         if match is not None:
-            arg_list = [arg_string[:match.span()[0]], arg_string[match.span()[1]:]]
+            arg_list = [
+                arg_string[:match.span()[0]],
+                arg_string[match.span()[1]:]
+                ]
             match = re.search(r"\((.*?)\)", arg_list[1])
             if match is not None:
                 command = [arg_list[1][:match.span()[0]], match.group()[1:-1]]
@@ -76,16 +79,16 @@ class HBNBCommand(cmd.Cmd):
         return False
 
     def do_quit(self, arg_string):
-        """Quit the program."""
+        """Quitting the program if true"""
         return True
 
     def do_EOF(self, arg_string):
-        """Exit the program."""
+        """Exiting the program."""
         print("")
         return True
 
     def do_create(self, arg_string):
-        """Create a new instance of a class."""
+        """Creating a new arg list of a class."""
         arg_list = parse_arguments(arg_string)
         if len(arg_list) == 0:
             print("** class name missing **")
@@ -97,40 +100,42 @@ class HBNBCommand(cmd.Cmd):
             storage.save()
 
     def do_show(self, arg_string):
-        """Display information about an instance."""
+        """showing the information about one case"""
         arg_list = parse_arguments(arg_string)
-        obj_dict = storage.all()
+        obj_dct = storage.all()
         if len(arg_list) == 0:
             print("** class name missing **")
         elif arg_list[0] not in HBNBCommand.__valid_classes:
             print("** class doesn't exist **")
         elif len(arg_list) == 1:
             print("** instance id missing **")
-        elif "{}.{}".format(arg_list[0], arg_list[1]) not in obj_dict:
+        elif "{}.{}".format(arg_list[0], arg_list[1]) not in obj_dct:
             print("** no instance found **")
         else:
-            print(obj_dict["{}.{}".format(arg_list[0], arg_list[1])])
+            print(obj_dct["{}.{}".format(arg_list[0], arg_list[1])])
 
     def do_destroy(self, arg_string):
-        """Destroy an instance."""
+        """Destroying the case"""
         arg_list = parse_arguments(arg_string)
-        obj_dict = storage.all()
+        obj_dct = storage.all()
         if len(arg_list) == 0:
             print("** class name missing **")
         elif arg_list[0] not in HBNBCommand.__valid_classes:
             print("** class doesn't exist **")
         elif len(arg_list) == 1:
             print("** instance id missing **")
-        elif "{}.{}".format(arg_list[0], arg_list[1]) not in obj_dict.keys():
+        elif "{}.{}".format(arg_list[0], arg_list[1]) not in obj_dct.keys():
             print("** no instance found **")
         else:
-            del obj_dict["{}.{}".format(arg_list[0], arg_list[1])]
+            del obj_dct["{}.{}".format(arg_list[0], arg_list[1])]
             storage.save()
 
     def do_all(self, arg_string):
-        """Display all instances of a class."""
+        """showing all the cases of a class."""
         arg_list = parse_arguments(arg_string)
-        if len(arg_list) > 0 and arg_list[0] not in HBNBCommand.__valid_classes:
+        if len(arg_list) > 0 and \
+            arg_list[0] not in HBNBCommand.__valid_classes:
+
             print("** class doesn't exist **")
         else:
             obj_list = []
@@ -142,7 +147,7 @@ class HBNBCommand(cmd.Cmd):
             print(obj_list)
 
     def do_count(self, arg_string):
-        """Count the instances of a class."""
+        """Counting the cases of a class."""
         arg_list = parse_arguments(arg_string)
         count = 0
         for obj in storage.all().values():
@@ -151,9 +156,9 @@ class HBNBCommand(cmd.Cmd):
         print(count)
 
     def do_update(self, arg_string):
-        """Update an instance."""
+        """Updating one case"""
         arg_list = parse_arguments(arg_string)
-        obj_dict = storage.all()
+        obj_dct = storage.all()
 
         if len(arg_list) == 0:
             print("** class name missing **")
@@ -164,7 +169,7 @@ class HBNBCommand(cmd.Cmd):
         if len(arg_list) == 1:
             print("** instance id missing **")
             return False
-        if "{}.{}".format(arg_list[0], arg_list[1]) not in obj_dict.keys():
+        if "{}.{}".format(arg_list[0], arg_list[1]) not in obj_dct.keys():
             print("** no instance found **")
             return False
         if len(arg_list) == 2:
@@ -178,14 +183,14 @@ class HBNBCommand(cmd.Cmd):
                 return False
 
         if len(arg_list) == 4:
-            obj = obj_dict["{}.{}".format(arg_list[0], arg_list[1])]
+            obj = obj_dct["{}.{}".format(arg_list[0], arg_list[1])]
             if arg_list[2] in obj.__class__.__dict__.keys():
                 val_type = type(obj.__class__.__dict__[arg_list[2]])
                 obj.__dict__[arg_list[2]] = val_type(arg_list[3])
             else:
                 obj.__dict__[arg_list[2]] = arg_list[3]
         elif type(eval(arg_list[2])) == dict:
-            obj = obj_dict["{}.{}".format(arg_list[0], arg_list[1])]
+            obj = obj_dct["{}.{}".format(arg_list[0], arg_list[1])]
             for k, v in eval(arg_list[2]).items():
                 if (k in obj.__class__.__dict__.keys() and
                         type(obj.__class__.__dict__[k]) in {str, int, float}):

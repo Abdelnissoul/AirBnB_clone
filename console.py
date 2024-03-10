@@ -134,7 +134,7 @@ class HBNBCommand(cmd.Cmd):
         """showing all the cases of a class."""
         arg_list = parse_arguments(arg_string)
         if len(arg_list) > 0 and \
-        arg_list[0] not in HBNBCommand.__valid_classes:
+                arg_list[0] not in HBNBCommand.__valid_classes:
 
             print("** class doesn't exist **")
         else:
